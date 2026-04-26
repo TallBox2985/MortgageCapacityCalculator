@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mortgage Capacity Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+body {
+  font-family: Arial, sans-serif;
+  background: #0b1d2a;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px 14px;
+  color: #fff;
+}
+
+.container {
+  width: 100%;
+  max-width: 860px;
+  background: #0f2a3d;
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 12px 30px rgba(0,0,0,0.4);
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  color: #b8d4e3;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.full-width { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; }
+
+label {
+  font-weight: 600;
+  font-size: 11px;
+  color: #cfe8f5;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+input {
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #cfe8f5;
+  border-radius: 6px;
+  outline: none;
+  background: #ffffff;
+  color: #000000;
+  font-family: Arial, sans-serif;
+  font-weight: 300;
+  width: 100%;
+}
+
+input:focus {
+  border-color: #7fd3ff;
+  box-shadow: 0 0 0 2px rgba(127,211,255,0.25);
+}
+
+.buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+
+button {
+  padding: 10px 18px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #1b5e7a;
+  color: white;
+  border: 1px solid #7fd3ff;
+}
+.btn-primary:hover { background: #247a9c; }
+
+.btn-secondary {
+  background: transparent;
+  color: #cfe8f5;
+  border: 1px solid #5f7f8f;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.04); }
+
+.results-panel {
+  background: #0c2434;
+  border: 1px solid #3a5a6b;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.results-panel h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e6f6ff;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 14px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.result-card {
+  background: #0f2a3d;
+  border: 1px solid #4f7286;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.result-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9fc4d8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 5px;
+}
+
+.result-value {
+  font-size: 22px;
+  font-weight: 300;
+  color: #ffffff;
+}
+
+.note {
+  font-size: 11px;
+  color: #9fc4d8;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mortgage Capacity Calculator</h1>
+    <p class="subtitle">Input your total monthly housing budget to estimate the maximum loan amount and home price after accounting for property tax, insurance, and HOA.</p>
+
+```
+<div class="inputs-grid">
+  <div class="field full-width">
+    <label for="budget">Total Monthly Housing Budget ($)</label>
+    <input type="number" id="budget" value="12500" step="100" min="0" oninput="calculate()" />
+  </div>
+  <div class="field">
+    <label for="rate">Interest Rate (%)</label>
+    <input type="number" id="rate" value="6.5" step="0.01" min="0" oninput="calculate()" />
+  </div>
+  <div class="field">
+    <label for="term">Loan Term (Years)</label>
+    <input type="number" id="term" value="30" step="1" min="1" oninput="calculate()" />
+  </div>
+  <div class="field">
+    <label for="down">Down Payment ($)</label>
+    <input type="number" id="down" value="575000" step="1000" min="0" oninput="calculate()" />
+  </div>
+  <div class="field">
+    <label for="tax">Property Tax (% / yr)</label>
+    <input type="number" id="tax" value="1.25" step="0.01" min="0" oninput="calculate()" />
+  </div>
+  <div class="field">
+    <label for="ins">Home Insurance ($/mo)</label>
+    <input type="number" id="ins" value="250" step="10" min="0" oninput="calculate()" />
+  </div>
+  <div class="field">
+    <label for="hoa">HOA ($/mo)</label>
+    <input type="number" id="hoa" value="0" step="10" min="0" oninput="calculate()" />
+  </div>
+</div>
+
+<div class="buttons">
+  <button class="btn-primary" onclick="calculate()">Calculate</button>
+  <button class="btn-secondary" onclick="reset()">Reset</button>
+</div>
+
+<div class="results-panel">
+  <h2>Results</h2>
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="result-label">Estimated Home Price</div>
+      <div class="result-value" id="r-home">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Implied Loan Amount</div>
+      <div class="result-value" id="r-loan">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Monthly P&amp;I</div>
+      <div class="result-value" id="r-pi">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Monthly Property Tax</div>
+      <div class="result-value" id="r-tax">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Monthly Insurance</div>
+      <div class="result-value" id="r-ins">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Monthly HOA</div>
+      <div class="result-value" id="r-hoa">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Total Monthly Cost</div>
+      <div class="result-value" id="r-total">$0</div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Down Payment %</div>
+      <div class="result-value" id="r-dpct">0%</div>
+    </div>
+  </div>
+  <p class="note">Solves for maximum home price and loan amount after including principal, interest, property tax, insurance, and HOA in the monthly budget.</p>
+</div>
+```
+
+  </div>
+
+  <script>
+    const fmt = v => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(v);
+
+    function paymentFactor(r, n) {
+      if (n <= 0) return 0;
+      if (r === 0) return 1 / n;
+      return (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    }
+
+    function calculate() {
+      const budget   = parseFloat(document.getElementById("budget").value) || 0;
+      const rate     = parseFloat(document.getElementById("rate").value)   || 0;
+      const term     = parseFloat(document.getElementById("term").value)   || 0;
+      const down     = parseFloat(document.getElementById("down").value)   || 0;
+      const taxRate  = parseFloat(document.getElementById("tax").value)    || 0;
+      const ins      = parseFloat(document.getElementById("ins").value)    || 0;
+      const hoa      = parseFloat(document.getElementById("hoa").value)    || 0;
+
+      const r = rate / 100 / 12;
+      const n = term * 12;
+      const taxM = (taxRate / 100) / 12;
+      const piFactor = paymentFactor(r, n);
+      const fixed = ins + hoa;
+      const denom = piFactor + taxM;
+
+      let homePrice = 0, loan = 0, pi = 0, tax = 0;
+      if (denom > 0) {
+        homePrice = Math.max((budget - fixed + piFactor * down) / denom, 0);
+        loan = Math.max(homePrice - down, 0);
+        pi   = loan * piFactor;
+        tax  = homePrice * taxM;
+      }
+
+      const total = pi + tax + ins + hoa;
+      const dpct  = homePrice > 0 ? (down / homePrice) * 100 : 0;
+
+      document.getElementById("r-home").textContent  = fmt(homePrice);
+      document.getElementById("r-loan").textContent  = fmt(loan);
+      document.getElementById("r-pi").textContent    = fmt(pi);
+      document.getElementById("r-tax").textContent   = fmt(tax);
+      document.getElementById("r-ins").textContent   = fmt(ins);
+      document.getElementById("r-hoa").textContent   = fmt(hoa);
+      document.getElementById("r-total").textContent = fmt(total);
+      document.getElementById("r-dpct").textContent  = dpct.toFixed(1) + "%";
+    }
+
+    function reset() {
+      document.getElementById("budget").value = 12500;
+      document.getElementById("rate").value   = 6.5;
+      document.getElementById("term").value   = 30;
+      document.getElementById("down").value   = 575000;
+      document.getElementById("tax").value    = 1.25;
+      document.getElementById("ins").value    = 250;
+      document.getElementById("hoa").value    = 0;
+      calculate();
+    }
+
+    calculate();
+  </script>
+
+</body>
+</html>
